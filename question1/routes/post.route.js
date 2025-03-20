@@ -1,7 +1,6 @@
-import express from "express";
-import { topPosts } from "../controllers/post.controller.js";
+import express from 'express';
+import { topPosts } from '../controllers/post.controller.js';
 const router = express.Router();
 
-
-router.get('/',topPosts);
-export default router
+router.get('/', topPosts);
+export default router;

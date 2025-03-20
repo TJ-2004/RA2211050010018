@@ -1,19 +1,21 @@
 import axios from 'axios';
 
+// Getting the token and URL from environment variables
 const token = process.env.token;
 const USER_URL = process.env.USER_URL;
 
-// Get all posts from all users
+// This function gets posts from all users
 export const fetchAllPosts = async () => {
+  // First, we fetch all users
   const users = await axios.get(`${USER_URL}/users`, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`, // sending token in the header
     },
   });
 
   const allPosts = [];
 
-  // Loop through all users and get their posts
+  // Now we loop through each user and get their posts
   for (const userId in users.data.users) {
     const posts = await axios.get(`${USER_URL}/users/${userId}/posts`, {
       headers: {
@@ -21,14 +23,14 @@ export const fetchAllPosts = async () => {
       },
     });
 
-    // Add all posts to the list
+    // Add all the posts to one big list
     allPosts.push(...posts.data.posts);
   }
 
   return allPosts;
 };
 
-// Get comments of a single post
+// This function gets the comments of a specific post
 export const fetchComments = async (postId) => {
   const comments = await axios.get(`${USER_URL}/posts/${postId}/comments`, {
     headers: {
@@ -39,11 +41,11 @@ export const fetchComments = async (postId) => {
   return comments.data.comments;
 };
 
-// Get popular posts (posts that have the most comments)
+// This one finds the popular posts (the ones with the most comments)
 export const popularPosts = async () => {
   const allPosts = await fetchAllPosts();
 
-  // For every post, get how many comments it has
+  // For each post, we count how many comments it has
   const postCommentCounts = await Promise.all(
     allPosts.map(async (post) => {
       const comments = await fetchComments(post.id);
@@ -51,22 +53,22 @@ export const popularPosts = async () => {
     }),
   );
 
-  // Sort posts so the one with most comments comes first
+  // Sort posts from most to least comments
   postCommentCounts.sort((a, b) => b.commentCount - a.commentCount);
 
-  // Return only the posts that have the max number of comments
+  // Return only those posts that have the highest comment count
   return postCommentCounts.filter(
     (post) => post.commentCount === postCommentCounts[0].commentCount,
   );
 };
 
-// Get the 5 most recent posts
+// This one gets the latest 5 posts (the newest ones)
 export const latestPosts = async () => {
   const allPosts = await fetchAllPosts();
 
-  // Assuming newer posts have higher IDs
+  // Sorting in descending order assuming higher ID means newer
   allPosts.sort((a, b) => b.id - a.id);
 
-  // Return the top 5 latest posts
+  // Picking the first 5 posts after sorting
   return allPosts.slice(0, 5);
 };
