@@ -1,12 +1,15 @@
-import React from 'react'
+import React from 'react';
+import { Card, CardContent, Typography } from '@mui/material';
 
-const FeedItem = () => {
+const FeedItem = ({ post }) => {
   return (
-    <div>
-      FeedItem
-      FeedItem
-    </div>
-  )
-}
+    <Card style={{ margin: '10px', width: '300px' }}>
+      <CardContent>
+        <Typography variant="h6">Post ID: {post.id}</Typography>
+        <Typography variant="body2">Content: {post.content}</Typography>
+      </CardContent>
+    </Card>
+  );
+};
 
-export default FeedItem
+export default FeedItem;
